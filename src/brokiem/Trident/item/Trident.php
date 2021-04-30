@@ -42,14 +42,14 @@ class Trident extends Tool {
         $player->getLevelNonNull()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_ITEM_TRIDENT_THROW);
 
         if ($this->hasEnchantment(Enchantment::RIPTIDE)) {
-            if ($player->isSurvival()) {
+            if (!$player->isCreative()) {
                 $this->applyDamage(1);
             }
 
             return true;
         }
 
-        if ($player->isSurvival()) {
+        if (!$player->isCreative()) {
             $this->applyDamage(1);
             $this->pop();
         }

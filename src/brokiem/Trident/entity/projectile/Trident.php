@@ -61,7 +61,7 @@ class Trident extends Projectile {
             $item->addEnchantment($enchantment);
         }
         $playerInventory = $player->getInventory();
-        if ($player->isSurvival()) {
+        if (!$player->isCreative()) {
             if (!$playerInventory->canAddItem($item)) {
                 return;
             }
@@ -127,7 +127,7 @@ class Trident extends Projectile {
                         if (!$this->isFlaggedForDespawn()) {
                             $owner = $this->getOwningEntity();
 
-                            if ($owner instanceof Player) {
+                            if ($owner instanceof Player && !$owner->isCreative()) {
                                 $item = ItemFactory::get(ItemIds::TRIDENT, $this->namedtag->getInt("trident_damage", 0));
                                 foreach ($this->getEnchantments() as $enchantment) {
                                     $item->addEnchantment($enchantment);
