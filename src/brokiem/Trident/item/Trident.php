@@ -46,6 +46,9 @@ class Trident extends Tool {
         $nbt = Entity::createBaseNBT($player->add(0, $player->getEyeHeight()), $player->getDirectionVector(), ($player->yaw > 180 ? 360 : 0) - $player->yaw, -$player->pitch);
         $entity = new TridentEntity($player->getLevelNonNull(), $nbt, $player);
         $entity->namedtag->setInt("trident_damage", $this->meta);
+        foreach ($this->getEnchantments() as $enchantment) {
+            $entity->addEnchantment($enchantment);
+        }
         $entity->spawnToAll();
 
         $player->getLevelNonNull()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_ITEM_TRIDENT_THROW);

@@ -13,13 +13,17 @@ use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\NamedTag;
+use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\Player;
@@ -54,6 +58,9 @@ class Trident extends Projectile {
         }
 
         $item = ItemFactory::get(ItemIds::TRIDENT, $this->namedtag->getInt("trident_damage", 0));
+        foreach ($this->getEnchantments() as $enchantment) {
+            $item->addEnchantment($enchantment);
+        }
         $playerInventory = $player->getInventory();
         if ($player->isSurvival()) {
             if (!$playerInventory->canAddItem($item)) {
@@ -114,6 +121,9 @@ class Trident extends Projectile {
             $nbt = Entity::createBaseNBT($this->add(0.5, 0, 0.5), new Vector3(), -$this->yaw);
             $trident = new Trident($this->getLevelNonNull(), $nbt, $this->getOwningEntity());
             $trident->namedtag->setInt("trident_damage", $this->namedtag->getInt("trident_damage", 0));
+            foreach ($this->getEnchantments() as $enchantment) {
+                $trident->addEnchantment($enchantment);
+            }
             $trident->spawnToAll();
 
             $this->flagForDespawn();
@@ -139,6 +149,10 @@ class Trident extends Projectile {
 
                             if ($owner instanceof Player) {
                                 $item = ItemFactory::get(ItemIds::TRIDENT, $this->namedtag->getInt("trident_damage", 0));
+                                foreach ($this->getEnchantments() as $enchantment) {
+                                    $item->addEnchantment($enchantment);
+                                }
+
                                 $playerInventory = $owner->getInventory();
                                 if (!$playerInventory->canAddItem($item)) {
                                     return;
@@ -151,5 +165,61 @@ class Trident extends Projectile {
                 }
             }
         }
+    }
+
+    /**
+     * @return EnchantmentInstance[]
+     */
+    public function getEnchantments(): array{
+        /** @var EnchantmentInstance[] $enchantments */
+        $enchantments = [];
+
+        $ench = $this->namedtag->getTag(Item::TAG_ENCH);
+        if($ench instanceof ListTag){
+            /** @var CompoundTag $entry */
+            foreach($ench as $entry){
+                $e = Enchantment::getEnchantment($entry->getShort("id"));
+                if($e !== null){
+                    $enchantments[] = new EnchantmentInstance($e, $entry->getShort("lvl"));
+                }
+            }
+        }
+
+        return $enchantments;
+    }
+
+    public function addEnchantment(EnchantmentInstance $enchantment): void {
+        $found = false;
+
+        $ench = $this->namedtag->getTag(Item::TAG_ENCH);
+        if(!($ench instanceof ListTag)){
+            $ench = new ListTag(Item::TAG_ENCH, [], NBT::TAG_Compound);
+        }else{
+            /** @var CompoundTag $entry */
+            foreach($ench as $k => $entry){
+                if($entry->getShort("id") === $enchantment->getId()){
+                    $ench->set($k, new CompoundTag("", [
+                        new ShortTag("id", $enchantment->getId()),
+                        new ShortTag("lvl", $enchantment->getLevel())
+                    ]));
+                    $found = true;
+                    break;
+                }
+            }
+        }
+
+        if(!$found){
+            $ench->push(new CompoundTag("", [
+                new ShortTag("id", $enchantment->getId()),
+                new ShortTag("lvl", $enchantment->getLevel())
+            ]));
+        }
+
+        $this->setNamedTagEntry($ench);
+    }
+
+    public function setNamedTagEntry(NamedTag $new) : void{
+        $tag = $this->namedtag;
+        $tag->setTag($new);
     }
 }
