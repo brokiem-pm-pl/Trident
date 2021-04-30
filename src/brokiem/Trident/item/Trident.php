@@ -33,9 +33,9 @@ class Trident extends Tool {
     public function onReleaseUsing(Player $player): bool {
         $diff = $player->getItemUseDuration();
         $p = $diff / 20;
-        $force = min(($p * $p + $p * 2) / 3, 1) * 2;
+        $force = min((($p ** 2) + $p * 2) / 3, 1);
 
-        if ($force < 0.1 or $diff < 5) {
+        if ($force < 0.5 or $diff < 5) {
             return false;
         }
 
@@ -54,8 +54,8 @@ class Trident extends Tool {
             $this->pop();
         }
 
-        $nbt = Entity::createBaseNBT($player->add(0, $player->getEyeHeight()), $player->getDirectionVector(), ($player->yaw > 180 ? 360 : 0) - $player->yaw, -$player->pitch);
-        $entity = new TridentEntity($player->getLevelNonNull(), $nbt, $player);
+        $nbt = Entity::createBaseNBT($player->add(0, $player->getEyeHeight()), $player->getDirectionVector()->multiply($force * 4), ($player->yaw > 180 ? 360 : 0) - $player->yaw, -$player->pitch);
+        $entity = new TridentEntity($player->getLevelNonNull(), $nbt, $player, $force >= 1);
         $entity->namedtag->setInt("trident_damage", $this->meta);
         foreach ($this->getEnchantments() as $enchantment) {
             $entity->addEnchantment($enchantment);

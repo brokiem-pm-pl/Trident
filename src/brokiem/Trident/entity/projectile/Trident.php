@@ -17,6 +17,7 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
+use pocketmine\level\Level;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
@@ -38,6 +39,28 @@ class Trident extends Projectile {
     public $gravity = 0.04;
 
     protected $damage = 8;
+
+    public function __construct(Level $level, CompoundTag $nbt, ?Entity $shootingEntity = null, bool $isCiritical = false) {
+        parent::__construct($level, $nbt, $shootingEntity);
+        $this->setCritical($isCiritical);
+    }
+
+    public function isCritical() : bool{
+        return $this->getGenericFlag(self::DATA_FLAG_CRITICAL);
+    }
+
+    public function setCritical(bool $value = true) : void{
+        $this->setGenericFlag(self::DATA_FLAG_CRITICAL, $value);
+    }
+
+    public function getResultDamage() : int{
+        $base = parent::getResultDamage();
+        if($this->isCritical()){
+            return ($base + mt_rand(0, (int) ($base / 2) + 1));
+        }
+
+        return $base;
+    }
 
     public function entityBaseTick(int $tickDiff = 1): bool {
         if ($this->closed) {
