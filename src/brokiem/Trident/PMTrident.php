@@ -27,8 +27,8 @@ class PMTrident extends PluginBase implements Listener {
     public function onEnable(): void {
         self::$i = $this;
 
-        Enchantment::registerEnchantment(new Enchantment(Enchantment::LOYALTY, "%enchantment.loyalty", Enchantment::RARITY_RARE, Enchantment::SLOT_NONE, Enchantment::SLOT_ALL, 1));
-        Enchantment::registerEnchantment(new Enchantment(Enchantment::RIPTIDE, "%enchantment.riptide", Enchantment::RARITY_RARE, Enchantment::SLOT_NONE, Enchantment::SLOT_ALL, 1));
+        Enchantment::registerEnchantment(new Enchantment(Enchantment::LOYALTY, "%enchantment.loyalty", Enchantment::RARITY_UNCOMMON, Enchantment::SLOT_NONE, Enchantment::SLOT_ALL, 3));
+        Enchantment::registerEnchantment(new Enchantment(Enchantment::RIPTIDE, "%enchantment.riptide", Enchantment::RARITY_RARE, Enchantment::SLOT_NONE, Enchantment::SLOT_ALL, 3));
 
         ItemFactory::registerItem(new TridentItem(), true);
         Item::initCreativeItems();

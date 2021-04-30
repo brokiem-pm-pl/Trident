@@ -22,7 +22,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
@@ -100,24 +99,6 @@ class Trident extends Projectile {
                 }
             }
 
-            // no weather in pmmp :(
-            /* $ench = $this->namedtag->getTag(Item::TAG_ENCH);
-            if ($ench instanceof ListTag) {
-                foreach ($ench as $entry) {
-                    if ($entry->getShort("id") === Enchantment::CHANNELING && ) {
-                        $pk = new AddActorPacket();
-                        $pk->type = AddActorPacket::LEGACY_ID_MAP_BC[EntityIds::LIGHTNING_BOLT];
-                        $pk->entityRuntimeId = Entity::$entityCount++;
-                        $pk->metadata = [];
-                        $pk->motion = null;
-                        $pk->yaw = $this->yaw;
-                        $pk->pitch = $this->pitch;
-                        $pk->position = $this;
-                        $this->getLevelNonNull()->broadcastPacketToViewers($this, $pk);
-                    }
-                }
-            }*/
-
             $nbt = Entity::createBaseNBT($this->add(0.5, 0, 0.5), new Vector3(), -$this->yaw);
             $trident = new Trident($this->getLevelNonNull(), $nbt, $this->getOwningEntity());
             $trident->namedtag->setInt("trident_damage", $this->namedtag->getInt("trident_damage", 0));
@@ -144,7 +125,6 @@ class Trident extends Projectile {
                 if ($entry->getShort("id") === Enchantment::LOYALTY) {
                     PMTrident::getInstance()->getScheduler()->scheduleDelayedTask(new ClosureTask(function(): void {
                         if (!$this->isFlaggedForDespawn()) {
-                            $this->flagForDespawn();
                             $owner = $this->getOwningEntity();
 
                             if ($owner instanceof Player) {
@@ -160,6 +140,8 @@ class Trident extends Projectile {
 
                                 $playerInventory->addItem(clone $item);
                             }
+
+                            $this->flagForDespawn();
                         }
                     }), (int)$this->distance($this->getOwningEntity()));
                 }
@@ -215,11 +197,6 @@ class Trident extends Projectile {
             ]));
         }
 
-        $this->setNamedTagEntry($ench);
-    }
-
-    public function setNamedTagEntry(NamedTag $new) : void{
-        $tag = $this->namedtag;
-        $tag->setTag($new);
+        $this->namedtag->setTag($ench);
     }
 }
