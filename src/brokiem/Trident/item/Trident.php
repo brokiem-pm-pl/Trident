@@ -39,16 +39,17 @@ class Trident extends Tool {
             return false;
         }
 
-        if ($player->isSurvival()) {
-            $this->applyDamage(1);
-            $this->pop();
-        }
-
         $player->getLevelNonNull()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_ITEM_TRIDENT_THROW);
 
         if ($this->hasEnchantment(Enchantment::RIPTIDE)) {
             $player->setGenericFlag(Entity::DATA_FLAG_SPIN_ATTACK);
+            $this->applyDamage(1);
             return true;
+        }
+
+        if ($player->isSurvival()) {
+            $this->applyDamage(1);
+            $this->pop();
         }
 
         $nbt = Entity::createBaseNBT($player->add(0, $player->getEyeHeight()), $player->getDirectionVector(), ($player->yaw > 180 ? 360 : 0) - $player->yaw, -$player->pitch);
