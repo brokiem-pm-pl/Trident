@@ -6,6 +6,7 @@ namespace brokiem\Trident\item;
 
 use brokiem\Trident\entity\projectile\Trident as TridentEntity;
 use pocketmine\entity\Entity;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Tool;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
@@ -43,6 +44,13 @@ class Trident extends Tool {
             $this->pop();
         }
 
+        $player->getLevelNonNull()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_ITEM_TRIDENT_THROW);
+
+        if ($this->hasEnchantment(Enchantment::RIPTIDE)) {
+            $player->setGenericFlag(Entity::DATA_FLAG_SPIN_ATTACK);
+            return true;
+        }
+
         $nbt = Entity::createBaseNBT($player->add(0, $player->getEyeHeight()), $player->getDirectionVector(), ($player->yaw > 180 ? 360 : 0) - $player->yaw, -$player->pitch);
         $entity = new TridentEntity($player->getLevelNonNull(), $nbt, $player);
         $entity->namedtag->setInt("trident_damage", $this->meta);
@@ -50,8 +58,6 @@ class Trident extends Tool {
             $entity->addEnchantment($enchantment);
         }
         $entity->spawnToAll();
-
-        $player->getLevelNonNull()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_ITEM_TRIDENT_THROW);
 
         return true;
     }

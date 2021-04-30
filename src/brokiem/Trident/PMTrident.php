@@ -7,12 +7,15 @@ namespace brokiem\Trident;
 use brokiem\Trident\entity\projectile\Trident;
 use brokiem\Trident\item\Trident as TridentItem;
 use pocketmine\entity\Entity;
+use pocketmine\event\Listener;
+use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\plugin\PluginBase;
 
-class PMTrident extends PluginBase {
+class PMTrident extends PluginBase implements Listener {
 
     /** @var PMTrident */
     private static $i;
@@ -25,10 +28,24 @@ class PMTrident extends PluginBase {
         self::$i = $this;
 
         Enchantment::registerEnchantment(new Enchantment(Enchantment::LOYALTY, "%enchantment.loyalty", Enchantment::RARITY_RARE, Enchantment::SLOT_NONE, Enchantment::SLOT_ALL, 1));
+        Enchantment::registerEnchantment(new Enchantment(Enchantment::RIPTIDE, "%enchantment.riptide", Enchantment::RARITY_RARE, Enchantment::SLOT_NONE, Enchantment::SLOT_ALL, 1));
 
         ItemFactory::registerItem(new TridentItem(), true);
         Item::initCreativeItems();
 
         Entity::registerEntity(Trident::class, true, ["minecraft:trident", "Trident"]);
+
+        $this->getServer()->getPluginManager()->registerEvents($this, $this);
+    }
+
+    public function onDataPacketRecieve(DataPacketReceiveEvent $event): void {
+        $packet = $event->getPacket();
+        $player = $event->getPlayer();
+
+        if ($packet instanceof PlayerActionPacket) {
+            if ($packet->action === PlayerActionPacket::ACTION_STOP_SPIN_ATTACK) {
+                $player->setGenericFlag(Entity::DATA_FLAG_SPIN_ATTACK, false);
+            }
+        }
     }
 }
