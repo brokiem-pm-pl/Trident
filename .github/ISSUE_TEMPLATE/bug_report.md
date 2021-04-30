@@ -24,7 +24,7 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**SimpleNPC plugin information**
+**Plugin information**
 
 - Version: [e.g. 2.0.1]
 - Server api: [e.g. 3.19.0]

@@ -17,6 +17,6 @@ class PMTrident extends PluginBase {
         ItemFactory::registerItem(new TridentItem(), true);
         Item::initCreativeItems();
 
-        Entity::registerEntity(Trident::class, true, ["minecraft:trident", "trident"]);
+        Entity::registerEntity(Trident::class, true, ["minecraft:trident", "Trident"]);
     }
 }
