@@ -5,4 +5,7 @@ branches:
 projects:
   Trident:
     path: ""
+    icon: "/assets/trident.png"
+    lint:
+      phpstan: false
 ...

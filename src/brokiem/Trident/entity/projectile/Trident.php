@@ -43,7 +43,7 @@ class Trident extends Projectile {
     }
 
     public function onCollideWithPlayer(Player $player): void {
-        if ($this->ticksLived < 10) {
+        if ($this->ticksLived < 10 and $this->getOwningEntity() === $player) {
             return;
         }
 

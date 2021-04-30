@@ -1,0 +1,20 @@
+name: PHPStan Checker
+
+on: [ push, pull_request ]
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+      - name: Create vendor Directory
+        run: |
+          echo Making vendor directory...
+          mkdir vendor
+          echo Directory made.
+      - name: Run PHPStan
+        uses: paroxity/pmmp-phpstan-action@3.19.0
+        with:
+          phpstan-config: phpstan.neon.dist
