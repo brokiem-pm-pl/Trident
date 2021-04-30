@@ -13,6 +13,7 @@ use pocketmine\plugin\PluginBase;
 
 class PMTrident extends PluginBase {
 
+    /** @var PMTrident */
     private static $i;
 
     public static function getInstance(): self {
