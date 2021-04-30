@@ -43,6 +43,10 @@ class PMTrident extends PluginBase implements Listener {
         $player = $event->getPlayer();
 
         if ($packet instanceof PlayerActionPacket) {
+            if ($packet->action === PlayerActionPacket::ACTION_START_SPIN_ATTACK) {
+                $player->setGenericFlag(Entity::DATA_FLAG_SPIN_ATTACK, true);
+            }
+
             if ($packet->action === PlayerActionPacket::ACTION_STOP_SPIN_ATTACK) {
                 $player->setGenericFlag(Entity::DATA_FLAG_SPIN_ATTACK, false);
             }
