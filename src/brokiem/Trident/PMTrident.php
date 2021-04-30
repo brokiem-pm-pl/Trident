@@ -13,7 +13,15 @@ use pocketmine\plugin\PluginBase;
 
 class PMTrident extends PluginBase {
 
+    private static $i;
+
+    public static function getInstance(): self {
+        return self::$i;
+    }
+
     public function onEnable(): void {
+        self::$i = $this;
+
         ItemFactory::registerItem(new TridentItem(), true);
         Item::initCreativeItems();
 
