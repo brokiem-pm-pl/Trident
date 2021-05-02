@@ -1,5 +1,5 @@
 name: Trident
-main: brokiem\trident\PMTrident
+main: brokiem\Trident\PMTrident
 version: 1.0.0
 api: 3.15.0
 author: brokiem
