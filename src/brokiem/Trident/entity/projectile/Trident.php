@@ -45,18 +45,18 @@ class Trident extends Projectile {
         $this->setCritical($isCiritical);
     }
 
-    public function isCritical() : bool{
+    public function isCritical(): bool {
         return $this->getGenericFlag(self::DATA_FLAG_CRITICAL);
     }
 
-    public function setCritical(bool $value = true) : void{
+    public function setCritical(bool $value = true): void {
         $this->setGenericFlag(self::DATA_FLAG_CRITICAL, $value);
     }
 
-    public function getResultDamage() : int{
+    public function getResultDamage(): int {
         $base = parent::getResultDamage();
-        if($this->isCritical()){
-            return ($base + mt_rand(0, (int) ($base / 2) + 1));
+        if ($this->isCritical()) {
+            return ($base + mt_rand(0, (int)($base / 2) + 1));
         }
 
         return $base;
@@ -157,11 +157,9 @@ class Trident extends Projectile {
                                 }
 
                                 $playerInventory = $owner->getInventory();
-                                if (!$playerInventory->canAddItem($item)) {
-                                    return;
+                                if ($playerInventory->canAddItem($item)) {
+                                    $playerInventory->addItem(clone $item);
                                 }
-
-                                $playerInventory->addItem(clone $item);
                             }
 
                             $this->flagForDespawn();
@@ -175,16 +173,16 @@ class Trident extends Projectile {
     /**
      * @return EnchantmentInstance[]
      */
-    public function getEnchantments(): array{
+    public function getEnchantments(): array {
         /** @var EnchantmentInstance[] $enchantments */
         $enchantments = [];
 
         $ench = $this->namedtag->getTag(Item::TAG_ENCH);
-        if($ench instanceof ListTag){
+        if ($ench instanceof ListTag) {
             /** @var CompoundTag $entry */
-            foreach($ench as $entry){
+            foreach ($ench as $entry) {
                 $e = Enchantment::getEnchantment($entry->getShort("id"));
-                if($e !== null){
+                if ($e !== null) {
                     $enchantments[] = new EnchantmentInstance($e, $entry->getShort("lvl"));
                 }
             }
@@ -197,12 +195,12 @@ class Trident extends Projectile {
         $found = false;
 
         $ench = $this->namedtag->getTag(Item::TAG_ENCH);
-        if(!($ench instanceof ListTag)){
+        if (!($ench instanceof ListTag)) {
             $ench = new ListTag(Item::TAG_ENCH, [], NBT::TAG_Compound);
-        }else{
+        } else {
             /** @var CompoundTag $entry */
-            foreach($ench as $k => $entry){
-                if($entry->getShort("id") === $enchantment->getId()){
+            foreach ($ench as $k => $entry) {
+                if ($entry->getShort("id") === $enchantment->getId()) {
                     $ench->set($k, new CompoundTag("", [
                         new ShortTag("id", $enchantment->getId()),
                         new ShortTag("lvl", $enchantment->getLevel())
@@ -213,7 +211,7 @@ class Trident extends Projectile {
             }
         }
 
-        if(!$found){
+        if (!$found) {
             $ench->push(new CompoundTag("", [
                 new ShortTag("id", $enchantment->getId()),
                 new ShortTag("lvl", $enchantment->getLevel())

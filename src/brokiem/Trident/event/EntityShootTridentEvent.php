@@ -12,22 +12,22 @@ use pocketmine\event\entity\EntityEvent;
 use pocketmine\item\Item;
 use function count;
 
-class EntityShootTridentEvent extends EntityEvent implements Cancellable{
+class EntityShootTridentEvent extends EntityEvent implements Cancellable {
     /** @var Item */
     private $trident;
-    /** @var Projectile */
+    /** @var Entity */
     private $projectile;
     /** @var float */
     private $force;
 
-    public function __construct(Living $shooter, Item $trident, Projectile $projectile, float $force){
+    public function __construct(Living $shooter, Item $trident, Projectile $projectile, float $force) {
         $this->entity = $shooter;
         $this->trident = $trident;
         $this->projectile = $projectile;
         $this->force = $force;
     }
 
-    public function getTrident() : Item{
+    public function getTrident(): Item {
         return $this->trident;
     }
 
@@ -36,24 +36,24 @@ class EntityShootTridentEvent extends EntityEvent implements Cancellable{
      *
      * NOTE: This might not return a Projectile if a plugin modified the target entity.
      */
-    public function getProjectile() : Entity{
+    public function getProjectile(): Entity {
         return $this->projectile;
     }
 
-    public function setProjectile(Entity $projectile) : void{
-        if($projectile !== $this->projectile){
-            if(count($this->projectile->getViewers()) === 0){
+    public function setProjectile(Entity $projectile): void {
+        if ($projectile !== $this->projectile) {
+            if (count($this->projectile->getViewers()) === 0) {
                 $this->projectile->close();
             }
             $this->projectile = $projectile;
         }
     }
 
-    public function getForce() : float{
+    public function getForce(): float {
         return $this->force;
     }
 
-    public function setForce(float $force) : void{
+    public function setForce(float $force): void {
         $this->force = $force;
     }
 }
